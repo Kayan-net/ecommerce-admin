@@ -1,0 +1,56 @@
+datasource db {
+  provider = "postgresql" // or "mysql" or "sqlite", depending on what you're using
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  stores    Store[]  @relation("UserStores")
+}
+
+model Store {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], name: "UserStores")
+  orders    Order[]  @relation("StoreOrders")
+  products  Product[] @relation("StoreProducts")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  price     Float
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], name: "StoreProducts")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  orders    Order[]  @relation("CustomerOrders")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  total      Float    @default(0)
+  storeId    String
+  customerId String?
+  store      Store    @relation(fields: [storeId], references: [id], name: "StoreOrders")
+  customer   Customer? @relation(fields: [customerId], references: [id], name: "CustomerOrders")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

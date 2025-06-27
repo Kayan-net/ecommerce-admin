@@ -1,0 +1,59 @@
+// schema.prisma
+
+// Database configuration
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Client generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+// If you're syncing Clerk users into your database, keep this model.
+// Otherwise, you can delete it and remove the relation from Store.
+
+model Store {
+  id        String    @id @default(cuid())
+  name      String
+  userId    String
+
+
+  products  Product[] @relation("StoreProducts")
+  orders    Order[]   @relation("StoreOrders")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  price     Float
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], name: "StoreProducts")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  orders    Order[]  @relation("CustomerOrders")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id         String     @id @default(cuid())
+  total      Float      @default(0)
+  storeId    String
+  customerId String?
+
+  store      Store      @relation(fields: [storeId], references: [id], name: "StoreOrders")
+  customer   Customer?  @relation(fields: [customerId], references: [id], name: "CustomerOrders")
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}

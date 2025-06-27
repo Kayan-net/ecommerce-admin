@@ -19,8 +19,9 @@ export default function NewStorePage() {
     try {
       setLoading(true);
       const response = await axios.post("/api/stores", { name });
-      router.push(`/${response.data.id}`);
+      router.push(`/admin/${response.data.id}`);
       toast.success("Store created!");
+      
     } catch (err) {
       toast.error("Something went wrong");
     } finally {

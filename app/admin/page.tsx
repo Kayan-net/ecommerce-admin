@@ -34,7 +34,7 @@ export default async function AdminPage() {
           {stores.map((store) => (
             <Link
               key={store.id}
-              href={`/${store.id}`}
+              href={`/admin/${store.id}`}
               className="block bg-white shadow rounded p-4 border hover:shadow-md transition"
             >
               <h2 className="text-lg font-semibold">{store.name}</h2>
